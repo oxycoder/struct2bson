@@ -5,7 +5,7 @@
 This package is no longer actively maintained, please feel free to fork it if
 you would like to continue it's use.
 
-[![Build Status](https://travis-ci.com/naamancurtis/mongo-go-struct-to-bson.svg?branch=master)](https://travis-ci.com/naamancurtis/mongo-go-struct-to-bson) [![codecov](https://codecov.io/gh/naamancurtis/mongo-go-struct-to-bson/branch/master/graph/badge.svg)](https://codecov.io/gh/naamancurtis/mongo-go-struct-to-bson) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![GoDoc](https://godoc.org/github.com/naamancurtis/mongo-go-struct-to-bson/mapper?status.svg)](https://godoc.org/github.com/naamancurtis/mongo-go-struct-to-bson/mapper)
+[![Build Status](https://travis-ci.com/naamancurtis/mongo-go-struct-to-bson.svg?branch=master)](https://travis-ci.com/naamancurtis/mongo-go-struct-to-bson) [![codecov](https://codecov.io/gh/naamancurtis/mongo-go-struct-to-bson/branch/master/graph/badge.svg)](https://codecov.io/gh/naamancurtis/mongo-go-struct-to-bson) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![GoDoc](https://godoc.org/github.com/naamancurtis/mongo-go-struct-to-bson/struct2bson?status.svg)](https://godoc.org/github.com/naamancurtis/mongo-go-struct-to-bson/struct2bson)
 
 Provides utility methods to support the converting of `structs` to `bson maps` for use in various MongoDB queries/patch updates. It is intended to be used alongside the [Mongo-Go Driver](https://github.com/mongodb/mongo-go-driver)
 
@@ -88,7 +88,7 @@ user = User {
 }
 
 // Calling the Convert function - passing nil as the options for now.
-result := mapper.ConvertStructToBSONMap(user, nil)
+result := struct2bson.ConvertStructToBSONMap(user, nil)
 
 // The result would be:
 bson.M {
@@ -141,7 +141,7 @@ user = User {
 <h6>UseIDifAvailable = true</h6>
 
 ```go
-result := mapper.ConvertStructToBSONMap(user, &mapper.MappingOpts{UseIDifAvailable: true})
+result := struct2bson.ConvertStructToBSONMap(user, &struct2bson.MappingOpts{UseIDifAvailable: true})
 
 // result would be:
 bson.M { "_id": "54759eb3c090d83494e2d804" }
@@ -151,7 +151,7 @@ bson.M { "_id": "54759eb3c090d83494e2d804" }
 <h6>RemoveID = true</h6>
 
 ```go
-result := mapper.ConvertStructToBSONMap(user, &mapper.MappingOpts{RemoveID: true})
+result := struct2bson.ConvertStructToBSONMap(user, &struct2bson.MappingOpts{RemoveID: true})
 
 // result would be:
 bson.M {
@@ -177,7 +177,7 @@ user = User {
   favouriteColor:  "blue",
 }
 
-result := mapper.ConvertStructToBSONMap(user, &mapper.MappingOpts{GenerateFilterOrPatch: true})
+result := struct2bson.ConvertStructToBSONMap(user, &struct2bson.MappingOpts{GenerateFilterOrPatch: true})
 
 // result would be:
 bson.M {
@@ -192,11 +192,11 @@ bson.M {
 
 #### Using a different Tag Name
 
-By default, the mapper uses the `"bson"` tag to identify what options and names should be assigned to each struct field. It is possible to change this to a custom tag if desired. In order to do so you need to split up the creation and mapping of your struct:
+By default, the struct2bson uses the `"bson"` tag to identify what options and names should be assigned to each struct field. It is possible to change this to a custom tag if desired. In order to do so you need to split up the creation and mapping of your struct:
 
 ```go
 // 1. Create the struct wrapper
-tempStruct := mapper.NewBSONMapperStruct(myStruct)
+tempStruct := struct2bson.NewBSONstruct2bsonStruct(myStruct)
 
 // 2. Set the custom tag name
 tempStruct.SetTagName("customTag")

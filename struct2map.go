@@ -18,14 +18,16 @@ var (
 	// You can over-write this once you have wrapped your struct
 	// in the mapping struct (StructToBSON) by chaining the
 	// .SetTagName() call on the wrapped struct.
-	DefaultTagName = "bson"
+	DefaultTagName  = "bson"
+	FallbackTagname = "json"
 )
 
 // StructToBson is the wrapper for a struct that enables this package to work
 type StructToBSON struct {
-	raw     interface{}
-	value   reflect.Value
-	TagName string
+	raw             interface{}
+	value           reflect.Value
+	TagName         string
+	FallbackTagName string
 }
 
 // MappingOpts allows the setting of options which drive the behaviour behind how the struct is parsed
@@ -65,9 +67,10 @@ type MappingOpts struct {
 // Panics if the argument is not a struct or pointer to a struct
 func NewBSONMapperStruct(s interface{}) *StructToBSON {
 	return &StructToBSON{
-		raw:     s,
-		value:   structVal(s),
-		TagName: DefaultTagName,
+		raw:             s,
+		value:           structVal(s),
+		TagName:         DefaultTagName,
+		FallbackTagName: FallbackTagname,
 	}
 }
 
@@ -124,7 +127,12 @@ func (s *StructToBSON) ToBSONMap(opts *MappingOpts) bson.M {
 		var finalVal interface{}
 
 		// Identify whether the struct field has tags or not
-		tagName, tagOpts := parseTag(field.Tag.Get(s.TagName))
+
+		tag := field.Tag.Get(s.TagName)
+		if tag == "" {
+			tag = field.Tag.Get(s.FallbackTagName)
+		}
+		tagName, tagOpts := parseTag(tag)
 		if tagName != "" {
 			name = tagName
 		}
