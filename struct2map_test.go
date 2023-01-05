@@ -1,13 +1,14 @@
-package mapper
+package struct2bson
 
 import (
+	"reflect"
+	"time"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"reflect"
-	"time"
 )
 
 var _ = Describe("Utility method", func() {
@@ -51,7 +52,7 @@ var _ = Describe("Utility method", func() {
 		Entry("an int is passed", 123),
 		Entry("a bool is passed", true),
 		Entry("a slice is passed", []int{1, 2, 3}),
-		Entry("a map is passed", map[string]struct{}{"Test 1": struct{}{}, "Test 2": struct{}{}}),
+		Entry("a map is passed", map[string]struct{}{"Test 1": {}, "Test 2": {}}),
 		Entry("a function is passed", func() {}),
 		Entry("a pointer to a string is passed", new(string)),
 		Entry("a pointer to an int is passed", new(int)),
@@ -237,7 +238,7 @@ var _ = Describe("The Mapping functions", func() {
 			It("should map a flat struct with nil options", func() {
 				result := ConvertStructToBSONMap(testStruct, nil)
 				Expect(len(result)).To(Equal(len(expected)))
-				for k, _ := range result {
+				for k := range result {
 					Expect(result[k]).To(Equal(expected[k]))
 				}
 			})
@@ -245,7 +246,7 @@ var _ = Describe("The Mapping functions", func() {
 			It("should map a flat struct with UseID set to true - with no _id provided", func() {
 				result := ConvertStructToBSONMap(testStruct, &MappingOpts{UseIDifAvailable: true})
 				Expect(len(result)).To(Equal(len(expected)))
-				for k, _ := range result {
+				for k := range result {
 					Expect(result[k]).To(Equal(expected[k]))
 				}
 			})
@@ -253,7 +254,7 @@ var _ = Describe("The Mapping functions", func() {
 			It("should map a flat struct with RemoveID set to true - no _id provided", func() {
 				result := ConvertStructToBSONMap(testStruct, &MappingOpts{RemoveID: true})
 				Expect(len(result)).To(Equal(len(expected)))
-				for k, _ := range result {
+				for k := range result {
 					Expect(result[k]).To(Equal(expected[k]))
 				}
 			})
@@ -261,7 +262,7 @@ var _ = Describe("The Mapping functions", func() {
 			It("should map a flat struct with both options set to true - no _id provided", func() {
 				result := ConvertStructToBSONMap(testStruct, &MappingOpts{UseIDifAvailable: true, RemoveID: true})
 				Expect(len(result)).To(Equal(len(expected)))
-				for k, _ := range result {
+				for k := range result {
 					Expect(result[k]).To(Equal(expected[k]))
 				}
 			})
@@ -370,7 +371,7 @@ var _ = Describe("The Mapping functions", func() {
 			}
 
 			Expect(result["testField1"]).To(Equal(valuesStruct.String))
-			for k, _ := range result["nestedStruct"].(bson.M) {
+			for k := range result["nestedStruct"].(bson.M) {
 				Expect(result["nestedStruct"].(bson.M)[k]).To(Equal(expected[k]))
 			}
 		})
@@ -399,7 +400,7 @@ var _ = Describe("The Mapping functions", func() {
 			}
 
 			Expect(result["testField1"]).To(Equal(valuesStruct.String))
-			for k, _ := range result["nestedStruct"].(bson.M) {
+			for k := range result["nestedStruct"].(bson.M) {
 				Expect(result["nestedStruct"].(bson.M)[k]).To(Equal(expected[k]))
 			}
 		})

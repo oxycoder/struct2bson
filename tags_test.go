@@ -1,4 +1,4 @@
-package mapper
+package struct2bson
 
 import (
 	. "github.com/onsi/ginkgo"

@@ -1,13 +1,14 @@
 // Provides utility methods to support the converting of structs to bson maps for use in various MongoDB queries/patch updates.
 //
 // It is intended to be used alongside the Mongo-Go Driver
-package mapper
+package struct2bson
 
 import (
 	"fmt"
+	"reflect"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"reflect"
 )
 
 // Package built based off https://github.com/fatih/structs/
@@ -82,27 +83,26 @@ func (s *StructToBSON) SetTagName(tag string) {
 //
 // Example StructToBSON to be converted:
 //
-//   type ExampleStruct struct {
-//      Value1 string `bson:"myFirstValue"`
-//      Value2 []int `bson:"myIntSlice"`
-//   }
+//	type ExampleStruct struct {
+//	   Value1 string `bson:"myFirstValue"`
+//	   Value2 []int `bson:"myIntSlice"`
+//	}
 //
 // The struct is first wrapped with the "StructToBSON" type to give
 // access to the mapping functions and is then converted to a bson.M
 //
-//   bson.M {
-//      { Key: "myFirstValue", Value: "Example String" },
-//      { Key: "myIntSlice", Value: {1, 2, 3, 4, 5} },
-//   }
+//	bson.M {
+//	   { Key: "myFirstValue", Value: "Example String" },
+//	   { Key: "myIntSlice", Value: {1, 2, 3, 4, 5} },
+//	}
 //
 // The following tag options are factored into the parsing:
 //
-// 	 // "omitempty" - Omit if the value is the zero value
-// 	 // "omitnested" - Pass the value of the struct directly as opposed to recursively mapping the struct
-// 	 // "flatten" - Pull out the data from the nested struct up one level
-// 	 // "string" - Use the implementation of the Stringer interface for the value
-// 	 // "-" - Do not map this field
-//
+//	// "omitempty" - Omit if the value is the zero value
+//	// "omitnested" - Pass the value of the struct directly as opposed to recursively mapping the struct
+//	// "flatten" - Pull out the data from the nested struct up one level
+//	// "string" - Use the implementation of the Stringer interface for the value
+//	// "-" - Do not map this field
 func ConvertStructToBSONMap(s interface{}, opts *MappingOpts) bson.M {
 	if reflect.ValueOf(s).Kind() != reflect.Struct && !(reflect.ValueOf(s).Kind() == reflect.Ptr && reflect.ValueOf(s).Elem().Kind() == reflect.Struct) {
 		return nil
